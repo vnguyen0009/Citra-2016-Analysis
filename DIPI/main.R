@@ -9,7 +9,7 @@ library(ggplot2)
 
 setwd(paste('C:/Users/Vy/Documents'))
 wd <- getwd()
-setwd(paste(wd,'work','Data','Citra2016', 'DIPI', 'src', sep = '/'))
+setwd(paste(wd,'work','Data','Citra2016','Citra-2016-Analysis', 'DIPI', 'src', sep = '/'))
 
 source('calcDIPI.R')
 
@@ -61,7 +61,7 @@ weather2$site <- 2
 
 weatherAll <- rbind(weather1, weather2[weather2$DAP > 0 ,])
 
-piTemp <- weatherAll[weatherAll$DAP >=15 & weatherAll$DAP <=30,]
+piTemp <- weatherAll[weatherAll$DAP >=0 & weatherAll$DAP <=30,]
 piTemp1 <- aggregate(weatherAll[,c('Tmin', 'Tavg', 'Tmax')], by = list(weatherAll$site), FUN=mean)
 #tail(weatherAll)
 ###### Pull Lines and set parameters #######
@@ -81,7 +81,7 @@ dp <- by(weatherAll, INDICES = list(weatherAll$Period, weatherAll$site), FUN = c
 dpTab <- do.call("rbind", dp)
 
 ####### RESULTS means DIPI for each seson of select lines #########
-setwd(paste(wd,'work','Data','Citra2016', 'DIPI', 'out', sep = '/'))
+setwd(paste(wd,'work','Data','Citra2016','Citra-2016-Analysis', 'DIPI', 'out', sep = '/'))
 
 #range(data$DAP, na.rm=T)
 dpTab1 <- subset(dpTab, DAP >= 15 & DAP <=30)
