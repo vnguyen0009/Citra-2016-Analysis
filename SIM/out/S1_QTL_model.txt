@@ -1,0 +1,35 @@
+
+		fitqtl summary
+
+Method: multiple imputation 
+Model:  normal phenotype
+Number of observations : 108 
+
+Full model result
+----------------------------------  
+Model formula: y ~ Q1 + Q2 + Q3 
+
+       df         SS          MS     LOD     %var Pvalue(Chi2)   Pvalue(F)
+Model   3 0.07909654 0.026365513 3.27246 13.02411  0.001757602 0.002212342
+Error 104 0.52821213 0.005078963                                          
+Total 107 0.60730867                                                      
+
+
+Drop one QTL at a time ANOVA table: 
+----------------------------------  
+       df Type III SS    LOD  %var F value Pvalue(Chi2) Pvalue(F)  
+1@62.4  1    0.034105 1.4673 5.616   6.715        0.009    0.0109 *
+7@47.7  1    0.008819 0.3883 1.452   1.736        0.181    0.1905  
+7@67.4  1    0.008915 0.3925 1.468   1.755        0.179    0.1881  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+
+Estimated effects:
+-----------------
+                est        SE      t
+Intercept  0.268747  0.007015 38.312
+1@62.4    -0.018205  0.007114 -2.559
+7@47.7    -0.010864  0.008415 -1.291
+7@67.4    -0.010654  0.008393 -1.269
+
