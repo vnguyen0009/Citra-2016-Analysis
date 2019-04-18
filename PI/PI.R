@@ -4,9 +4,9 @@ library(plyr)
 library(dplyr)
 library(ggplot2)
 
-setwd(paste('C:/Users/Vy/Documents'))
+#setwd(paste('C:/Users/Vy/Documents'))
 wd <- getwd()
-setwd(paste(wd,'work','Data','Citra2016','Citra-2016-Analysis', 'PI', 'src', sep = '/'))
+setwd(paste(wd, 'src', sep = '/'))
 
 source('findSlope.R')
 source('plotPI.R')
@@ -20,7 +20,7 @@ geno <- read.csv('PtoGen.csv', header = T, stringsAsFactors=T)
 flapjack <- read.csv('flapjack.csv', header = T, stringsAsFactors = T) 
 #Flapjack was uploaded to find the determinency of the lines
 
-setwd(paste(wd,'work','Data','Citra2016','Citra-2016-Analysis', 'PI', 'out', sep = '/'))
+setwd(paste(wd, 'out', sep = '/'))
 pdf('results.pdf', onefile = T)
 ######################################
 ####### CORRECT PI FILE FORMAT #######
@@ -50,7 +50,7 @@ pit <- rbind(pit1Mean, pit2Mean)
 pit <- rbind(pit, pit3Mean)
 
 noNApit <- pit[is.na(pit$PI)==F & is.na(pit$DAP)==F,]
-#write.csv(noNApit, file='RAW_PI.csv')
+#write.csv(pit3Geno, file='RAW_PI.csv')
 
 
 #####################################
@@ -58,7 +58,9 @@ noNApit <- pit[is.na(pit$PI)==F & is.na(pit$DAP)==F,]
 #####################################
 byPlot = by(noNApit, INDICES=list(noNApit$site, noNApit$geno), FUN=findSlope)
 
+
 resultsRIL <- do.call("rbind", byPlot)
+#parents <- resultsRIL[grep('CAL|JAM',resultsRIL$geno), ]
 #resultsRIL <- merge(results, geno, by = 'plot', all.x=T)
 
 write.csv(resultsRIL, file = 'DIPI.csv')
@@ -76,6 +78,7 @@ unique(determ[is.na(determ$Fin),'geno'])
 
 S1RIJC <- RIJC[RIJC$site==1, c('geno','slope')]
 S2RIJC <- RIJC[RIJC$site==2, c('geno','slope')]
+
 t.test(S1RIJC$slope,S2RIJC$slope)
 
 mergedRIJC <- merge(S1RIJC, S2RIJC, by='geno', all=T)
@@ -85,13 +88,15 @@ hist(mergedRIJC$difference,
      main=paste('differences between season genotype slopes'),
      xlab=paste('DIPI Difference'))
 
+mean(mergedRIJC$difference, na.rm=T)
+
 
 ############ ALL POPULATION PLOTS ###############################
 p <- ggplot(meanRIL, aes(label = geno))
 
 plot1 <- p + geom_density(aes(x=meanRIL$slope)) +
   coord_cartesian(ylim = c()) + 
-  theme() +
+  theme(text = element_text(size=20)) +
   labs( x = paste('Slope'), 
         title = paste('All Genotypes Daily Increase of Plastechron', sep=' ') ) + 
   theme_bw() + 
@@ -107,7 +112,7 @@ q <- ggplot(RIJC, aes(label = geno))
 
 plot2 <- q + geom_density(aes(x=RIJC$slope)) +
   coord_cartesian(ylim = c()) + 
-  theme() +
+  theme(text = element_text(size=20)) +
   labs( x = paste('DIPI'), 
         title = paste('RIJC Daily Increase of Plastechron Index', sep=' ') ) + 
   theme_bw() + 
@@ -122,7 +127,7 @@ r <- ggplot(determ[is.na(determ$Fin)==F,], aes())
 
 plot3 <- r + geom_density(aes(x=slope, fill=as.factor(Fin), alpha=0.2)) +
   coord_cartesian(ylim = c()) + 
-  theme() +
+  theme(text = element_text(size=20)) +
   labs( x = paste('DIPI'), 
         title = paste('RIJC Daily Increase of Plastechron Index', sep=' ') ) + 
   theme_bw() + 
@@ -140,6 +145,7 @@ plot4 <- ggplot() +
   labs(x = 'Days After Planting (DAP)', y = paste('Plastechron Index (PI)'), 
        title = paste('Plastechron Index of RIL population over time')) +
   facet_grid(site~.) +
+  theme(text = element_text(size=20)) +
   theme_bw()
 
 print(plot4)
