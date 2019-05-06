@@ -69,9 +69,9 @@ r <- ggplot(RIL)
 determPlot <- r + #geom_smooth(aes(x = meltedData$X100SD, 
     #               y = meltedData$value, 
     #              color=as.factor(meltedData$site)), se=F) + 
-    geom_point(aes(x = RIL$X100SD, 
-                   y = RIL$value, 
-                   color=as.factor(RIL$Fin), 
+    geom_point(aes(x = X100SD, 
+                   y = value, 
+                   color=as.factor(Fin), 
                    alpha=0.5)) +
     coord_cartesian(ylim = c()) + 
     theme(legend.position = "bottom")+
@@ -80,7 +80,7 @@ determPlot <- r + #geom_smooth(aes(x = meltedData$X100SD,
          y = 'Trait Value (g)', 
          color = 'Fin' ) +
     #scale_fill_discrete(name = 'Growing Seasons') + 
-    facet_wrap(~RIL$variable, scales='free') +
+    facet_wrap(~variable, scales='free') +
     theme_bw() + 
     scale_alpha(guide = 'none')
 
