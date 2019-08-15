@@ -7,7 +7,7 @@ rm(list = ls())
 library(plyr)
 library(dplyr)
 library(ggplot2)
-library(asreml)
+library(asreml) ##### ASREML LICENSE IS REQUIRED FOR THIS CODE
 library(nadiv)
 library(asremlPlus)
 library(data.table)
