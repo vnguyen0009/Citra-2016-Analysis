@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><graph xmlns:gx="http://grogra.de/xmlpersistence" xmlns="http://grogra.de/xmlpersistence">
+ <node root="MainGraph" id="0" type="de.grogra.graph.impl.Node">
+  <data gx:name="extentIndex" gx:value="7"/>
+  <node id="23795" type="de.grogra.rgg.RGGRoot" edges="+">
+   <node id="23797" type="de.grogra.turtle.F" edges="+">
+    <data gx:name="length" gx:value="2.0"/>
+    <data gx:name="diameter" gx:value="2.0"/>
+    <node id="23798" type="de.grogra.turtle.RU" edges="+">
+     <data gx:name="angle" gx:value="80.0"/>
+     <node id="23799" type="de.grogra.turtle.RH" edges="-">
+      <data gx:name="angle" gx:value="90.0"/>
+      <node id="23800" type="de.grogra.turtle.F" edges="-">
+       <node id="23801" type="de.grogra.imp3d.objects.Parallelogram" edges="-">
+        <object gx:name="shader" gx:type="de.grogra.imp3d.shading.RGBAShader" gx:value="true 21"/>
+        <data gx:name="length" gx:value="5.0"/>
+        <object gx:name="axis" gx:value="2.0 0.0 0.0"/>
+       </node>
+      </node>
+     </node>
+    </node>
+    <node id="23802" type="de.grogra.turtle.RU" edges="+">
+     <data gx:name="angle" gx:value="-80.0"/>
+     <node id="23803" type="de.grogra.turtle.RH" edges="-">
+      <data gx:name="angle" gx:value="90.0"/>
+      <node id="23804" type="de.grogra.turtle.F" edges="-">
+       <node id="23805" type="de.grogra.imp3d.objects.Parallelogram" edges="-">
+        <object gx:name="shader" gx:type="de.grogra.imp3d.shading.RGBAShader" gx:value="true 21"/>
+        <data gx:name="length" gx:value="5.0"/>
+        <object gx:name="axis" gx:value="2.0 0.0 0.0"/>
+       </node>
+      </node>
+     </node>
+    </node>
+    <node id="23806" type="NAR$interNode" edges="-">
+     <data gx:name="length" gx:value="0.0"/>
+     <data gx:name="diameter" gx:value="2.0"/>
+     <node id="23807" type="NAR$Node" edges="-">
+      <node id="23808" type="NAR$MS" edges="-">
+       <data gx:name="radius" gx:value="1.25"/>
+      </node>
+     </node>
+    </node>
+   </node>
+  </node>
+ </node>
+ <node root="MetaGraph" id="1" type="de.grogra.graph.impl.Node">
+  <data gx:name="extentIndex" gx:value="7"/>
+  <node id="23794" type="NAR" edges="+">
+   <data gx:name="extentIndex" gx:value="7"/>
+   <object gx:name="initialTurtleState" color="14" length="100.0" diameter="0.1" tropism="0.0" parameter="0.0" carbon="0.0" heartwood="0.0" internodeCount="0"/>
+  </node>
+ </node>
+</graph>

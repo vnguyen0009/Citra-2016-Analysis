@@ -1,0 +1,160 @@
+// initializing variables needed
+float len, temp, NAR;
+int DAP, nodeMSLN, NumMaxedNodes; //DAV1 is days after V1
+
+float preNodeNum, preBranchNum, preMSLN, preMSLEN;
+float currentNodeNum, currentBranchNum, currentMSLEN;
+int currentMSLN;
+
+const DatasetRef dat = new DatasetRef("dat");
+
+//Parameters: Calima
+//const float b_bNum = -5.37, m_bNum = 1.75; //parameters for branching num
+//const float b_msLeaf = -2.6137, m_msLeaf = 2.7525; //parameters for MS leaf num
+//const float Nm = 0.25, Topt = 26.5, Tbase = 8.4; //parameters for NAR
+//const float phi1_MSLEN = 29.0271, phi2_MSLEN = -4.0231, phi3_MSLEN = 0.7152; //parameters for mainstem length
+//const float maxInterNode = 3.78;
+
+//Parameters: Jamapa | Comment out Calima and uncomment Jamapa Parameters	
+const float b_bNum = -0.9680, m_bNum = 0.4642; //parameters for branching num
+const float b_msLeaf = -1.09911, m_msLeaf = 2.5487; //parameters for MS leaf num
+const float Nm = 0.33, Topt = 25.6, Tbase = 6.1; //parameters for NAR
+const float phi1_MSLEN = 70.80, phi2_MSLEN = -4.12485, phi3_MSLEN = 0.33855; //parameters for mainstem length
+const float maxInterNode = 3.85;
+
+//mean tempature from sample weather file
+const float[] weather = {
+	27.08, 27.55, 23.65,25.3,26.04,25.4,24.84,25.66,
+	26.68,26.83,27.2,26.72,22.95,25.04,22.66,24.86,23.45,23.87,24,24.71,24.71,
+	24.87,25,24.23,25.57,26.46,26.11,25.01,24.88,25.13,26.18,25.01,25.77,
+	26.01,26.44,27.32,26.88,26.67,25.4,26.27,23.7,24.24,24.79,21.26,23.96,24.14,
+	24.64,26.18,26.02,26.52,23.72,24.41,23.75,21.84,23.63,25.26,26.08,25.15,
+	24.87,25.35,25.55,25.8, 26.22,25.46,24.81,22.81,24.44,24.84,23.83,22.83,
+	23.67,23.16,22.39
+};
+
+// Function to calculate output of temp function
+float NAR(float temp, float Nm, float Topt, float Tbase){
+	float fT;
+	fT = Nm*(temp - Tbase)/(Topt - Tbase);
+	return fT;
+}
+
+float bNum(float m, float b, float nodeNum){
+	float bNum;
+	bNum = m*nodeNum + b;
+	return bNum;
+}
+
+float MSLEN(float MSNOD, float phi1, float phi2, float phi3){
+	float MSLEN;
+	MSLEN = phi1/(1+Math.exp(-(phi2+phi3*MSNOD)));
+	return MSLEN;
+}
+
+float MSLEAF(float MSNOD, float m, float b){
+	float MSLEAF;
+	MSLEAF = m*MSNOD + b;
+	return MSLEAF;
+}
+
+//Plant Organ Objects/Modules
+module MS(float nodenum) extends Sphere(1.25)
+{
+	{setShader(GREEN);}
+}
+
+module interNode(float nodenum, float totalMSLen, float interNodelen) 
+	extends F(interNodelen,0.5);
+
+module branch(float len) extends F(10,0.5);
+module Node(float currentNodeNum, float totalBranchNum, int NodeMSLN) ==> Sphere(1.25);
+
+module trifoliate(float len) ==> 
+	RU(80) F(3,1) Sphere(0.5) [RU(90) RH(0) RL(-80) leaf(5,2.5)]
+	[RU(0) RH(90) RL(0) leaf(5,2.5)]
+	[RU(90) RH(0) RL(80) leaf(5,2.5)];
+	
+
+//Running the FSPM
+protected void init ()
+[	{dat.clear().setColumnKey(0,"currentNodeNum").
+		setColumnKey(1, "BranchNum").setColumnKey(2,"TOTALLEN").
+		setColumnKey(3, "MSLEAFNUM");
+	chart(dat, XY_PLOT);}
+	
+	{DAP = 0;
+	currentNodeNum = 0;
+	preNodeNum =0;
+	currentBranchNum = 0;
+	currentMSLEN = 0;
+	currentMSLN = 0;
+	nodeMSLN = 0;
+	NumMaxedNodes = 0;}
+	
+	Axiom ==> 
+	[F(2, 2) //inputs: nodeNum, totalBranchNum, totalMSLN, NodeMSLN
+		[RU(80) RH(90) F(1) leaf(5,4)]
+		[RU(-80) RH(90) F(1) leaf(5,4)]
+		interNode(currentNodeNum, currentMSLEN, 0) 
+		Node(currentNodeNum,currentBranchNum,currentMSLN)
+		MS(currentNodeNum)
+	];
+]
+
+public void run ()
+[	
+	//calculations
+	{NAR = NAR(weather[DAP], Nm, Topt, Tbase); //calc node addition rate
+	if(weather[DAP] < Tbase)(NAR=0); //piecewise portion of function
+	if(weather[DAP] >= Topt)(NAR=Nm);
+	preNodeNum = preNodeNum + NAR;} //add NAR to number of current nodes
+	
+	{preBranchNum = bNum(m_bNum, b_bNum, preNodeNum); //function for branch number
+	preMSLN = MSLEAF(preNodeNum, m_msLeaf, b_msLeaf); //call for MS leaf num
+	preMSLEN = MSLEN(preNodeNum ,phi1_MSLEN,phi2_MSLEN, phi3_MSLEN);}
+	
+	// node addition
+	MS(x), (currentNodeNum+1 < preNodeNum ) ==> 
+		interNode(currentNodeNum,currentMSLEN,0) RH(30*-x) 
+		Node(x+1,0,0) MS(x+1) //x is current Node Number
+		{currentNodeNum++;};
+
+	// branch addition
+	Node(x,y,z), (y < 3 && currentBranchNum +1 < preBranchNum && x >0) ==> 
+		//y is the number of branches on node number x
+		Node(x, y+1,z) [RU(30*-y+80) RH(90*y) RL(30) branch(1)]
+		{currentBranchNum++;};
+		
+	// MSLEAF addition
+	Node(x,y,z), (currentMSLN +1 < preMSLN && z<6) ==>
+		RH(30*-z+20) Node(x,y,z+1)[RU(5*z) RH(90*z) RL(0) trifoliate]
+		{currentMSLN++;};
+		
+	{NumMaxedNodes = 0;}
+	
+	//Mainstem Length
+	interNode(x,y,z), (z <=maxInterNode, x > 0) ==> 
+	{
+		if (z >= maxInterNode){
+			len = 0;
+			NumMaxedNodes++;}
+		if (z < maxInterNode)
+			len = (preMSLEN-currentMSLEN-NumMaxedNodes*maxInterNode)/(currentNodeNum-NumMaxedNodes);
+	}
+	interNode(currentNodeNum,currentMSLEN,z+len)
+	{currentMSLEN= currentMSLEN + len;};	
+		
+	{println("Day After Planting: " + DAP);
+		println("Mean Temp (c) = " + weather[DAP]);
+		println("NAR = " + NAR(weather[DAP], Nm, Topt, Tbase));
+		println("Predicted NodeNumber = " + preNodeNum + " Current NodeNum = " + currentNodeNum);
+		println("Predicted MSLen = " + preMSLEN + " Current MSLEN = " + currentMSLEN);
+		//println("Maxed Nodes: " + NumMaxedNodes);
+		println("Predicted Branch Num =" + preBranchNum + " Current BranchNum = " + currentBranchNum);
+		println("Predicted MSLN = " + preMSLN + " Current MSLN = " + currentMSLN);
+	}
+		
+	{DAP++;
+	dat << currentNodeNum << currentBranchNum << currentMSLEN << currentMSLN;}
+]

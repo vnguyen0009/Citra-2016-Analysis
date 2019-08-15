@@ -1,0 +1,60 @@
+module MS(float nodenum) extends Sphere(0.1)
+{
+	{setShader(GREEN);}
+}
+module interNode(float len) extends F(0.25);
+
+module branch(float len) extends F(1.5);
+
+module Node(float len, float branchnum) ==> Sphere(0.08);
+
+int DAP = 0;
+float NodeNum = 1;
+float branchNum = 0;
+int currentBranchNum = 1;
+
+//model parameters
+const float phi1 = 7.56; //num MS node
+const float phi2 = -3.64;
+const float phi3 = .168;
+
+const float b = -5.37; //total branch num
+const float m = 1.75;
+
+protected void init ()
+[
+	{DAP = 0;}
+	{NodeNum = 1;
+	branchNum = 0;
+	currentBranchNum = 1;}
+	
+	Axiom ==> interNode 
+	[RU(80) RH(90) F(0.25) leaf(0.5,0.25)]
+	[RU(-80) RH(90) F(0.25) leaf(0.5,0.25)]
+	MS(NodeNum) Node(0,0);
+]
+
+public void run ()
+[	
+	{NodeNum = phi1/(1 + Math.exp(-(phi2+phi3*DAP)));} //model
+	{branchNum = m*NodeNum +b;}
+	
+	MS(x), (x<NodeNum) ==> RH(30*-x) Node(x+1, 0) interNode  //x is the current node num
+		MS(x+1); //RH is rotation about the y axis of the turtle
+		
+	Node(x, y), (y < 3 && currentBranchNum < branchNum && x >0) ==> 
+	Node(x, y+1) //y is the number of leaves on node numer x
+	[RU(30*-y+80) RH(90*y) RL(30) branch(1)]{
+		currentBranchNum++; //this keeps count of total branch number on plant
+	};
+	
+	{println("DAP = "+DAP);
+	println("Predicted NodeNumber = " + NodeNum);
+	println("Predicted Branch Num =" + branchNum);}
+	{DAP++;}
+]
+
+public void toEnd ()
+{
+	for (apply (60)) run (); 
+}

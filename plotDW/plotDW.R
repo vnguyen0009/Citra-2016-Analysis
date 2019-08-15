@@ -204,6 +204,7 @@ pdf(paste(wd, 'out', 'dPlots.pdf', sep='/'), onefile = T)
 print(leafDPlot)
 print(stemDPlot)
 print(wholeDPlot)
+
 dev.off()
 
 

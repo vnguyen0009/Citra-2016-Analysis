@@ -1,0 +1,99 @@
+// initializing variables needed
+float NodeNum, branchNum, temp, NAR, currentBranchNum, maxInterNode = 3.78;;
+int DAV1= 0; //DAV1 is days after V1
+const DatasetRef dat = new DatasetRef("dat");
+
+//Parameters: Genotype Specific
+const float b = -5.37, m = 1.75;
+const float Nm = 0.25, Topt = 26.5, Tbase = 8.4;
+
+//mean tempature from sample weather file
+const float[] weather = {
+	27.08, 27.55, 23.65,25.3,26.04,25.4,24.84,25.66,
+	26.68,26.83,27.2,26.72,22.95,25.04,22.66,24.86,23.45,23.87,24,24.71,24.71,
+	24.87,25,24.23,25.57,26.46,26.11,25.01,24.88,25.13,26.18,25.01,25.77,
+	26.01,26.44,27.32,26.88,26.67,25.4,26.27,23.7,24.24,24.79,21.26,23.96,24.14,
+	24.64,26.18,26.02,26.52,23.72,24.41,23.75,21.84,23.63,25.26,26.08,25.15,
+	24.87,25.35,25.55,25.8, 26.22,25.46,24.81,22.81,24.44,24.84,23.83,22.83,
+	23.67,23.16,22.39
+};
+
+// Function to calculate output of temp function
+float NAR(float temp, float Nm, float Topt, float Tbase){
+	float fT;
+	//if(temp < Tbase)
+	//(fT = 0);
+	//if(temp > Topt)
+	//(fT = Nm*1);
+	//if((temp > Tbase) && (temp < Topt))
+	fT = Nm*(temp - Tbase)/(Topt - Tbase);
+	return fT;
+}
+
+
+float bNum(float m, float b, float nodeNum){
+	float bNum;
+	bNum = m*nodeNum + b;
+	return bNum;
+}
+
+//Plant Organ Objects/Modules
+module MS(float nodenum) extends Sphere(0.1)
+{
+	{setShader(GREEN);}
+}
+
+module interNode(float currentlen, float maxInterNode) ==>
+{
+	float length;
+	if(currentlen >= maxInterNode) length = currentlen;
+	if(currentlen < maxInterNode) length = currentlen + 0.05;
+}F(length);
+
+module branch(float len) extends F(1.5);
+module Node(float len, float branchnum) ==> Sphere(0.08);
+
+
+//Running the FSPM
+protected void init ()
+[	{dat.clear().setColumnKey(0,"NodeNum").setColumnKey(1, "BranchNum");
+	chart(dat, XY_PLOT);}
+	
+	{DAV1 = 0;
+	NodeNum = 0;
+	int currentNodeNum = 0;
+	branchNum = 0;
+	currentBranchNum = 0;}
+	
+	Axiom ==> interNode(1, maxInterNode)
+	[RU(80) RH(90) F(0.25) leaf(0.5,0.25)]
+	[RU(-80) RH(90) F(0.25) leaf(0.5,0.25)]
+	MS(NodeNum) Node(0,0);
+]
+
+public void run ()
+[	
+	{NAR = NAR(weather[DAV1], Nm, Topt, Tbase);
+	if(weather[DAV1] < Tbase)(NAR=0);
+	if(weather[DAV1] >= Topt)(NAR=Nm);
+	NodeNum = NodeNum + NAR;} //call NAR funct
+	{branchNum = bNum(m, b, NodeNum);} //call branch number function
+	
+	MS(x), (x+1<NodeNum) ==> RH(30*-x) Node(x+1, 0)  //x is the current node num
+		MS(x+1); //RH is rotation about the y axis of the turtle
+
+	
+	Node(x, y), (y < 3 && currentBranchNum +1 < branchNum && x >0) ==> 
+		Node(x, y+1) //y is the number of leaves on node numer x
+		[RU(30*-y+80) RH(90*y) RL(30) branch(1)]
+		{currentBranchNum++;};
+	
+	{println("Day After V1: " + DAV1);
+		println("Mean Temp (c) = " + weather[DAV1]);
+		println("NAR = " + NAR(weather[DAV1], Nm, Topt, Tbase));
+		println("Predicted NodeNumber = " + NodeNum);
+		println("Predicted Branch Num =" + branchNum);}
+		
+	{DAV1++;
+	dat << NodeNum << branchNum;}
+]

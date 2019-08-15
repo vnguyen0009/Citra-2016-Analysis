@@ -1,0 +1,10 @@
+
+Name: NAR.rgg
+Content-Type: text/x-grogra-rgg; charset=windows-1252
+
+Name: NAR2.gs
+Content-Type: application/x-grogra-registry+xml
+
+Name: graph.xml
+Content-Type: application/x-grogra-graph+xml
+

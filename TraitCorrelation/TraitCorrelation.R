@@ -13,13 +13,15 @@ DW <- read.csv('DW 4 1 19.csv', row.names=1, na.strings = c('', 'NA', '*', '.', 
 seed <- read.csv('FH seed 9 11 18.csv', row.names=1, na.strings = c('', 'NA', '*', '.', '?'), stringsAsFactors = F)
 flapjack <- read.csv('flapjack.csv', na.strings = c('', 'NA', '*', '.', '?'), stringsAsFactors = F)
 
+DW$TOTALPOD <- rowSums(DW[,c('DWAP', 'DWGP', 'DWPOD', 'DWMP')], na.rm=T) 
+
 FH <- DW[DW$HNO==11,]
 seed100 <- seed[,c('plot', 'X100SD')]
 GH <- flapjack[,c('RIL', 'Fin')]
 
 data <- merge(seed100, FH, all.x=T, by='plot')
-data <- data[,c(1,2,4:12,15,19)]
-meanData <- aggregate(data[,c(2:11)], by = list(data$geno, data$site), na.rm=T, FUN=mean)
+data <- data[,c(1,2,4,7, 12,15,19,20)]
+meanData <- aggregate(data[,c(2:5,8)], by = list(data$geno, data$site), na.rm=T, FUN=mean)
 
 colnames(meanData)[1:2] <- c('geno', 'site')
 
