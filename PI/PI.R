@@ -1,3 +1,6 @@
+## This code is using plastochron index, fitting it to a linear model
+## The slope is our DIPI or daily increase of plastochron index
+
 rm(list = ls())
 
 library(plyr)

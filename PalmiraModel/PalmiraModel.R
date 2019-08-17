@@ -1,3 +1,5 @@
+# This code is to model leaf number based off of node number rather than days
+
 rm(list=ls())
 
 library(dplyr)

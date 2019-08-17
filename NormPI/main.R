@@ -1,3 +1,6 @@
+
+# This code is to normalize plastochron index data, taking into account the experiment design
+# (randomized block design)
 rm(list = ls())
 
 #install.packages("C:/Users/Vy/Downloads/asreml_4.1.0.98.zip", repos = NULL, type ="win.binary")

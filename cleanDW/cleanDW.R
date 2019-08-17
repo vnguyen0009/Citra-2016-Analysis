@@ -1,5 +1,7 @@
 # AUTHOR: VY T. NGUYEN
-# LAST EDITED: 4/1/2019
+# LAST EDITED: 8/17/2019
+# This code is to clean the dry weight data. There are no dates, only harvest numbers
+# data for one ID is in multiple rows and need to be compiled to one
 
 rm(list=ls())
 
@@ -10,13 +12,13 @@ wd <- getwd()
 
 setwd(paste(wd,'data', sep='/'))
 
-source(paste(wd,'src', 'Hdate.R', sep='/'))
-source(paste(wd,'src', 'Pdate.R', sep='/'))
+source(paste(wd,'src', 'Hdate.R', sep='/')) #function to assign harvest dates
+source(paste(wd,'src', 'Pdate.R', sep='/')) #function to assign planting dates
 
 dates <- read.csv('dates.csv',stringsAsFactors = F)
 RAW <- read.csv('DW.csv', na.strings = c('', 'NA', '*', '.', '?'), stringsAsFactors = F)
-genoCode <- read.csv('plotToGeno.csv', stringsAsFactors = F)
-FHdates <- read.csv('FH dates.csv', stringsAsFactors = F)
+genoCode <- read.csv('plotToGeno.csv', stringsAsFactors = F) #id to genotype file
+FHdates <- read.csv('FH dates.csv', stringsAsFactors = F) #final harvest dates
 
 #FHdates$H11 <- as.Date(FHdates$H11,tryFormats=c('%m/%d/%Y'))
 #dates[,c(2:12)] <- as.Date(dates[,c(2:12)],tryFormats=c('%m/%d/%Y'))

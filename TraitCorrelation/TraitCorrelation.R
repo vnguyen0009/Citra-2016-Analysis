@@ -1,3 +1,6 @@
+
+## This code is using data visualization to see if there is a relationship between 
+## various traits in the common bean
 rm(list=ls())
 
 library(dplyr)

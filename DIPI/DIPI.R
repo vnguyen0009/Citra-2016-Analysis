@@ -3,6 +3,10 @@
 ## Last Edited: 2/8/2019 ##
 ###########################
 
+# This code to calculate daily increase of plastochron index (DIPI)
+# Plastochron index is a way of measuring plant age
+# Instead of by days, it is by morphology
+
 rm(list = ls())
 
 library(plyr)
@@ -15,7 +19,7 @@ setwd(paste(wd, 'src', sep = '/'))
 
 source('calcDIPI.R')
 
-weather <- read.csv('FAWN_report (1).csv', header = T, stringsAsFactors = F, 
+weather <- read.csv('FAWN_report (1).csv', header = T, stringsAsFactors = F, #weather data
                     na.strings = c('', '*', 'NA'))
 setwd(paste(wd, 'out', sep = '/'))
 ###########################################
@@ -25,8 +29,10 @@ setwd(paste(wd, 'out', sep = '/'))
 weather1 <- weather
 weather2 <- weather
 
-s1Pdate <- as.Date('3/23/2016', tryFormats = c('%m/%d/%Y'))
+s1Pdate <- as.Date('3/23/2016', tryFormats = c('%m/%d/%Y')) #planting dates for the seasons
 s2Pdate <- as.Date('5/6/2016', tryFormats = c('%m/%d/%Y'))
+
+# season 1 is the control and season 2 is the heat treatment
 
 weather1$DAP <- as.numeric(as.Date(weather$Period, tryFormats = c('%m/%d/%Y')) - s1Pdate)
 weather1$site <- 1
@@ -35,7 +41,7 @@ weather2$DAP <- as.numeric(as.Date(weather$Period, tryFormats = c('%m/%d/%Y')) -
 weather2$site <- 2
 
 weatherAll <- rbind(weather1, weather2[weather2$DAP > 0 ,])
-
+# piTemp is pulling out the weather data for the days plastochron index (PI) was taken
 piTemp <- weatherAll[ifelse(weatherAll$site==1, 
                                weatherAll$DAP >=15 & weatherAll$DAP <=26,
                                weatherAll$DAP >=19 & weatherAll$DAP <=29),]
@@ -45,7 +51,8 @@ piTemp1 <- aggregate(piTemp[,c('Tmin', 'Tavg', 'Tmax','srad')], by=list(piTemp$s
 colnames(piTemp1)[1] <- c('site')
 
 write.csv(piTemp1,file='weatherTable.csv')
-
+# trying to see if there is a statistically significant difference in the weather of 
+# growing seasons
 t.test(piTemp$Tavg[piTemp$site==1], piTemp$Tavg[piTemp$site==2])
 t.test(piTemp$Tmin[piTemp$site==1], piTemp$Tmin[piTemp$site==2])
 t.test(piTemp$Tmax[piTemp$site==1], piTemp$Tmax[piTemp$site==2])

@@ -1,3 +1,8 @@
+
+# This leaf analysis is to fit leaf data to linear or non-linear models for the FSPM
+# In this code, I am trying to see if once the data is normalized to leaf age rather than
+# days after planting, the leaves follow a similar growth curve
+
 rm(list=ls())
 #install.packages('minpack.lm')
 library(plyr)
@@ -80,8 +85,8 @@ data$DAP <- as.numeric(data$DAP)
 
 line <- data[data$geno=='CAL'& data$site==2,]
 
-leafAge <- function(x){
-  plotId <- x['plot']
+leafAge <- function(x){ #This is to calculate the age of a secific leaf based on when it appeared
+  plotId <- x['plot'] 
   leafId <- x['Code']
   currentDay <- as.numeric(x['DAP'])
   firstDay <- as.numeric(min(data[data$plot==plotId & data$Code==leafId,'DAP']), 

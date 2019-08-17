@@ -1,3 +1,7 @@
+# This code is just trying to visialize principal component analysis to find 
+# How closely correlated different traits are
+# The goal is model a trait against another rather than to days after planting
+
 rm(list=ls())
 
 library(devtools)
